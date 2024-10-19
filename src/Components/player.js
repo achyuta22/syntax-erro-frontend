@@ -8,8 +8,8 @@ import socket from "../Utils/Socket";
 import { useAudio } from "../AudioContext"; // Import the audio context
 
 function Player() {
-  const [audioUrls, setAudioUrls] = useState([]); // Use array for audio URLs
-  const { audioUrl, setAudioUrl,playing,setPlaying } = useAudio(); // Access audioUrl and setAudioUrl from context
+  // const [audioUrls, setAudioUrls] = useState([]); // Use array for audio URLs
+  const { audioUrl, setAudioUrl,playing,setPlaying ,audioUrls,setAudioUrls} = useAudio(); // Access audioUrl and setAudioUrl from context
   const [volume, setVolume] = useState(0.8);
   const [currentIndex, setCurrentIndex] = useState(0); // Track current audio index
 //   const [playing, setPlaying] = useState(false);
@@ -50,7 +50,8 @@ function Player() {
         );
         const data = await response.json();
         console.log(data.secure_url);
-        setAudioUrls((prevUrls) => [...prevUrls, data.secure_url]);
+        // setAudioUrls((prevUrls) => [...prevUrls, data.secure_url]);
+        // socket.emit('updateUploadUrl',{audioUrls: audioUrls});// sending the state with all the song urls
         setAudioUrl(data.secure_url); // Set the uploaded file URL in global state
         const email = localStorage.getItem("userEmail"); // Retrieve email from localStorage
 
@@ -77,7 +78,7 @@ function Player() {
       </h1>
 
       <div className="w-full md:w-2/3 lg:w-1/2 p-4 bg-white shadow-lg rounded-lg">
-        {/* {audioUrl ? (
+        {audioUrl ? (
           <ReactPlayer
             url={audioUrl} // Use the global audioUrl
             playing={playing}
@@ -89,8 +90,8 @@ function Player() {
           />
         ) : (
           <p className="text-gray-600">No audio uploaded yet</p>
-        )} */}
-        {audioUrls.length > 0 ? (
+        )}
+        {/* {audioUrls.length > 0 ? (
           <div className="mb-4">
             <ReactPlayer
               url={audioUrls[currentIndex]} // Play the current audio URL
@@ -105,9 +106,9 @@ function Player() {
           </div>
         ) : (
           <p className="text-gray-600">No audio uploaded yet</p>
-        )}
+        )} */}
 
-        <div className="mt-4 flex flex-col items-center">
+         <div className="mt-4 flex flex-col items-center">
           <button
             onClick={togglePlay}
             className={`px-4 py-2 rounded-md text-white font-semibold ${
@@ -131,8 +132,8 @@ function Player() {
               className="w-full"
             />
             <p className="mt-2 text-gray-600">Volume: {volume}</p>
-          </div>
-        </div>
+          </div> 
+        </div> 
 
         {/* File upload section */}
         <div className="mt-4 w-full">
