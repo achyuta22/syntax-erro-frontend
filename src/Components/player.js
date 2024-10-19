@@ -24,6 +24,7 @@ function Player() {
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
+
   const handleEnded = () => {
     if (currentIndex < audioUrls.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1); // Move to the next audio
@@ -73,18 +74,11 @@ function Player() {
     }
   };
 
-  // Play the next audio when current one ends
-  //   const handleEnded = () => {
-  //     if (currentIndex < audioUrls.length - 1) {
-  //       setCurrentIndex((prevIndex) => prevIndex + 1); // Move to the next audio
-  //       setPlaying(true);
-  //     } else {
-  //       setPlaying(false); // Stop playing if there are no more audios
-  //     }
-  //   };
+  return (<>
 
-  return (
+    
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+   
       <h1 className="text-3xl font-bold mb-6 text-blue-600">
         React Player Audio
       </h1>
@@ -169,6 +163,8 @@ function Player() {
         <SocketComponent />
       </div>
     </div>
+     
+    </>
   );
 }
 

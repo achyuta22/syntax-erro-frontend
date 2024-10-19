@@ -102,28 +102,47 @@ const SocketComponent = () => {
     };
 
     return (
-        <div>
-            <h2>Socket.IO Room Management</h2>
+        <div className="p-4 bg-gray-50 rounded-lg shadow-lg max-w-md mx-auto">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Socket.IO Room Management</h2>
             <input
                 type="text"
                 placeholder="Enter room name"
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
+                className="p-2 mb-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <button onClick={handleCreateRoom}>Create Room</button>
-            <button onClick={handleJoinRoom}>Join Room</button>
-            {joinedRoom && <p>You are in room: {joinedRoom}</p>}
-            {message && <p>{message}</p>} {/* Display messages to the user */}
+            <div className="flex justify-between mb-4">
+                <button
+                    onClick={handleCreateRoom}
+                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded shadow hover:opacity-90 transition"
+                >
+                    Create Room
+                </button>
+                <button
+                    onClick={handleJoinRoom}
+                    className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-700 text-white rounded shadow hover:opacity-90 transition"
+                >
+                    Join Room
+                </button>
+            </div>
+            {joinedRoom && <p className="text-green-600 mb-4">You are in room: {joinedRoom}</p>}
+            {message && <p className="text-red-600 mb-4">{message}</p>} {/* Display messages to the user */}
 
             <input
                 type="text"
                 placeholder="Enter the variable"
                 value={variableInput}
                 onChange={(e) => setVariableInput(e.target.value)}
+                className="p-2 mb-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <button onClick={handleChangeVariable}>Change Variable</button>
+            <button
+                onClick={handleChangeVariable}
+                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded shadow hover:opacity-90 transition"
+            >
+                Change Variable
+            </button>
 
-            {sharedVariable && <p>Variable has been updated: {sharedVariable}</p>}
+            {sharedVariable && <p className="mt-4 text-gray-700">Variable has been updated: {sharedVariable}</p>}
         </div>
     );
 };
