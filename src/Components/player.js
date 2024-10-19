@@ -8,8 +8,10 @@ import socket from "../Utils/Socket";
 import { useAudio } from "../AudioContext"; // Import the audio context
 
 function Player() {
+  const [audioUrls, setAudioUrls] = useState([]); // Use array for audio URLs
   const { audioUrl, setAudioUrl,playing,setPlaying } = useAudio(); // Access audioUrl and setAudioUrl from context
   const [volume, setVolume] = useState(0.8);
+  const [currentIndex, setCurrentIndex] = useState(0); // Track current audio index
 //   const [playing, setPlaying] = useState(false);
   const [file, setFile] = useState(null);
 
@@ -22,6 +24,14 @@ function Player() {
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+  };
+  const handleEnded = () => {
+    if (currentIndex < audioUrls.length - 1) {
+      setCurrentIndex((prevIndex) => prevIndex + 1); // Move to the next audio
+      setPlaying(true);
+    } else {
+      setPlaying(false); // Stop playing if there are no more audios
+    }
   };
 
   const handleUpload = async () => {
@@ -40,6 +50,7 @@ function Player() {
         );
         const data = await response.json();
         console.log(data.secure_url);
+        setAudioUrls((prevUrls) => [...prevUrls, data.secure_url]);
         setAudioUrl(data.secure_url); // Set the uploaded file URL in global state
         const email = localStorage.getItem("userEmail"); // Retrieve email from localStorage
 
@@ -66,7 +77,7 @@ function Player() {
       </h1>
 
       <div className="w-full md:w-2/3 lg:w-1/2 p-4 bg-white shadow-lg rounded-lg">
-        {audioUrl ? (
+        {/* {audioUrl ? (
           <ReactPlayer
             url={audioUrl} // Use the global audioUrl
             playing={playing}
@@ -76,6 +87,22 @@ function Player() {
             height="50px"
             className="rounded-md"
           />
+        ) : (
+          <p className="text-gray-600">No audio uploaded yet</p>
+        )} */}
+        {audioUrls.length > 0 ? (
+          <div className="mb-4">
+            <ReactPlayer
+              url={audioUrls[currentIndex]} // Play the current audio URL
+              playing={playing}
+              controls={true}
+              volume={volume}
+              width="100%"
+              height="50px"
+              className="rounded-md"
+              onEnded={handleEnded} // Handle when audio ends
+            />
+          </div>
         ) : (
           <p className="text-gray-600">No audio uploaded yet</p>
         )}
