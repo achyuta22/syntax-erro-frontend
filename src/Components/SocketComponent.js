@@ -6,6 +6,7 @@ const SocketComponent = () => {
     const [joinedRoom, setJoinedRoom] = useState(''); // State to track the room the user joined
     const [sharedVariable, setSharedVariable] = useState(''); // Shared variable state
     const [variableInput, setVariableInput] = useState(''); // State to track variable input
+    const [message, setMessage] = useState(''); // State for messages (success/error)
 
     useEffect(() => {
         // Listen for the connection event
@@ -19,18 +20,51 @@ const SocketComponent = () => {
             setSharedVariable(newValue); // Update the shared variable state
         });
 
+        // Listen for room creation confirmation
+        socket.on('roomCreated', (room) => {
+            setMessage(`Room "${room}" created. Waiting for peers to join...`);
+            setJoinedRoom(room); // Track the created room
+        });
+
+        // Listen for room joining confirmation
+        socket.on('roomJoined', (room) => {
+            setMessage(`Joined room "${room}". Waiting for updates...`);
+            setJoinedRoom(room); // Track the joined room
+        });
+
+        // Handle peer joining notification
+        socket.on('peerJoined', (peerId) => {
+            setMessage(`Peer ${peerId} joined the room!`);
+        });
+
+        // Handle errors
+        socket.on('error', (error) => {
+            setMessage(error);
+        });
+
         // Cleanup the effect when the component unmounts
         return () => {
             socket.off('connect');
             socket.off('variableUpdated');
+            socket.off('roomCreated');
+            socket.off('roomJoined');
+            socket.off('peerJoined');
+            socket.off('error');
         };
     }, []);
 
     const handleJoinRoom = () => {
         if (room) {
             socket.emit('joinRoom', room); // Emit joinRoom event to the server
-            setJoinedRoom(room); // Track the joined room
-            console.log(`Joined room: ${room}`); // Debugging
+            console.log(`Attempting to join room: ${room}`); // Debugging
+            setRoom(''); // Clear the input field
+        }
+    };
+
+    const handleCreateRoom = () => {
+        if (room) {
+            socket.emit('createRoom', room); // Emit createRoom event to the server
+            console.log(`Creating room: ${room}`); // Debugging
             setRoom(''); // Clear the input field
         }
     };
@@ -45,15 +79,17 @@ const SocketComponent = () => {
 
     return (
         <div>
-            <h2>Socket.IO Example</h2>
+            <h2>Socket.IO Room Management</h2>
             <input
                 type="text"
                 placeholder="Enter room name"
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
             />
+            <button onClick={handleCreateRoom}>Create Room</button>
             <button onClick={handleJoinRoom}>Join Room</button>
-            {joinedRoom && <p>You joined room: {joinedRoom}</p>}
+            {joinedRoom && <p>You are in room: {joinedRoom}</p>}
+            {message && <p>{message}</p>} {/* Display messages to the user */}
 
             <input
                 type="text"
