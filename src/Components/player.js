@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import ReactPlayer from "react-player";
 import SocketComponent from "./SocketComponent"; // Import SocketComponent
 import axios from "axios";
+import socket from "../Utils/Socket";
 import { useAudio } from "../AudioContext"; // Import the audio context
 
 function Player() {
@@ -13,7 +14,10 @@ function Player() {
   const [file, setFile] = useState(null);
 
   const togglePlay = () => {
-    setPlaying(!playing);
+    const newPlayStatus = !playing;
+    console.log(newPlayStatus);
+    setPlaying(newPlayStatus); // Update local play status
+    socket.emit('playStatusChanged', newPlayStatus); // Emit play/pause status to peers
   };
 
   const handleFileChange = (e) => {

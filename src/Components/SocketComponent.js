@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import socket from '../Utils/Socket'; // Import the socket instance
-import { useAudio } from "../AudioContext"; // Import the audio context
+import { useAudio} from "../AudioContext"; // Import the audio context
 
 const SocketComponent = () => {
-    const { audioUrl, setAudioUrl } = useAudio("https://res.cloudinary.com/dnlklmo7y/video/upload/v1729328576/sfqccbo8qkhed9mt0y9i.mp3"); // Access audioUrl and setAudioUrl from context
+    const { audioUrl, setAudioUrl,playing,setPlaying  } = useAudio(); // Access audioUrl and setAudioUrl from context
     const [room, setRoom] = useState(''); // State to track the room input
     const [joinedRoom, setJoinedRoom] = useState(''); // State to track the room the user joined
     const [sharedVariable, setSharedVariable] = useState(''); // Shared variable state
     const [variableInput, setVariableInput] = useState(''); // State to track variable input
     const [message, setMessage] = useState(''); // State for messages (success/error)
-    const [song,setSong] = useState('abcd');
     const [currentSongUrl, setCurrentSongUrl] = useState(''); // song url for peers from backend
-
+    // const [song,setSong] = useState('abcd');
+    // const [currentTimestamp, setCurrentTimestamp] = useState(0);
     useEffect(() => {
         // Listen for the connection event
         socket.on('connect', () => {
@@ -45,6 +45,10 @@ const SocketComponent = () => {
              setAudioUrl(url);
             setCurrentSongUrl(url); // Update the song URL state
         });
+        socket.on('playStatusUpdated', (playStatus) => {
+            console.log('Received play/pause update from host:', playStatus); // Debugging
+            setPlaying(playStatus); // Update play status based on the host
+        });
 
         // Handle errors
         socket.on('error', (error) => {
@@ -73,7 +77,7 @@ const SocketComponent = () => {
 
     const handleCreateRoom = () => {
         if (room) {
-            socket.emit('createRoom', { roomName: room, songUrl: audioUrl }); // Correctly structured object
+            socket.emit('createRoom', { roomName: room, songUrl: audioUrl,playStatus:false}); // Correctly structured object
             console.log(`Creating room: ${room}`); // Debugging
             setRoom(''); // Clear the input field
         }
@@ -85,6 +89,9 @@ const SocketComponent = () => {
             socket.emit('changeVariable', variableInput); // Emit changeVariable event
             setVariableInput(''); // Clear the variable input after submission
         }
+    };
+    const handlePlayPauseEmit = (playStatus) => {
+        socket.emit('playPauseUpdate', playStatus); // Emit the play/pause status to peers
     };
 
     return (
