@@ -9,6 +9,7 @@ export const AudioProvider = ({ children }) => {
 
 
   return (
+    // wrapping children with some global state variables 
     <AudioContext.Provider value={{ audioUrl, setAudioUrl,playing,setPlaying }}>
       {children}
     </AudioContext.Provider>

@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import socket from '../Utils/Socket'; // Import the socket instance
+import { useAudio } from "../AudioContext"; // Import the audio context
 
 const SocketComponent = () => {
+    const { audioUrl, setAudioUrl } = useAudio("https://res.cloudinary.com/dnlklmo7y/video/upload/v1729328576/sfqccbo8qkhed9mt0y9i.mp3"); // Access audioUrl and setAudioUrl from context
     const [room, setRoom] = useState(''); // State to track the room input
     const [joinedRoom, setJoinedRoom] = useState(''); // State to track the room the user joined
     const [sharedVariable, setSharedVariable] = useState(''); // Shared variable state
     const [variableInput, setVariableInput] = useState(''); // State to track variable input
     const [message, setMessage] = useState(''); // State for messages (success/error)
+    const [song,setSong] = useState('abcd');
+    const [currentSongUrl, setCurrentSongUrl] = useState(''); // song url for peers from backend
 
     useEffect(() => {
         // Listen for the connection event
         socket.on('connect', () => {
             console.log('Connected with ID:', socket.id);
-        });
-
-        // Listen for variable updates from the backend
-        socket.on('variableUpdated', (newValue) => {
-            console.log('Variable updated from server:', newValue); // Debugging
-            setSharedVariable(newValue); // Update the shared variable state
         });
 
         // Listen for room creation confirmation
@@ -37,6 +35,17 @@ const SocketComponent = () => {
             setMessage(`Peer ${peerId} joined the room!`);
         });
 
+        // Listen for variable updates from the backend
+        socket.on('variableUpdated', (newValue) => {
+            console.log('Variable updated from server:', newValue); // Debugging
+            setSharedVariable(newValue); // Update the shared variable state
+        });
+        socket.on('songUrlUpdated', (url) => {
+            console.log('Song URL is succesfully emitted from server:', url); // Debugging
+             setAudioUrl(url);
+            setCurrentSongUrl(url); // Update the song URL state
+        });
+
         // Handle errors
         socket.on('error', (error) => {
             setMessage(error);
@@ -50,6 +59,7 @@ const SocketComponent = () => {
             socket.off('roomJoined');
             socket.off('peerJoined');
             socket.off('error');
+            socket.off('songUrlUpdated'); // Cleanup listener for song URL updates
         };
     }, []);
 
@@ -63,7 +73,7 @@ const SocketComponent = () => {
 
     const handleCreateRoom = () => {
         if (room) {
-            socket.emit('createRoom', room); // Emit createRoom event to the server
+            socket.emit('createRoom', { roomName: room, songUrl: audioUrl }); // Correctly structured object
             console.log(`Creating room: ${room}`); // Debugging
             setRoom(''); // Clear the input field
         }
