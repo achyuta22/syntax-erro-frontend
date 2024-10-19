@@ -3,11 +3,8 @@ import socket from '../Utils/Socket'; // Import the socket instance
 import { useAudio} from "../AudioContext"; // Import the audio context
 
 const SocketComponent = () => {
-<<<<<<< HEAD
-    const { audioUrl, setAudioUrl } = useAudio(); // Access audioUrl and setAudioUrl from context
-=======
-    const { audioUrl, setAudioUrl,playing,setPlaying  } = useAudio(); // Access audioUrl and setAudioUrl from context
->>>>>>> 39c0757b9ca361ecbe68ba1172422f0a61ccf720
+    const { audioUrl, setAudioUrl,playing,setPlaying,audioUrls,setAudioUrls } = useAudio(); // Access audioUrl and setAudioUrl from context
+    const [uploadUrl,setUploadUrl] = useState('');// this store the audio link of the peer uploaded song 
     const [room, setRoom] = useState(''); // State to track the room input
     const [joinedRoom, setJoinedRoom] = useState(''); // State to track the room the user joined
     const [sharedVariable, setSharedVariable] = useState(''); // Shared variable state
@@ -46,13 +43,18 @@ const SocketComponent = () => {
         });
         socket.on('songUrlUpdated', (url) => {
             console.log('Song URL is succesfully emitted from server:', url); // Debugging
-             setAudioUrl(url);
+            setAudioUrl(url);
             setCurrentSongUrl(url); // Update the song URL state
         });
         socket.on('playStatusUpdated', (playStatus) => {
             console.log('Received play/pause update from host:', playStatus); // Debugging
             setPlaying(playStatus); // Update play status based on the host
         });
+        // Listening for audio URL updates from the backend
+        // socket.on('peersAudioUrls', (updatedAudioUrls) => {
+        // console.log(`updated audiourls ${updatedAudioUrls}`);
+        // setAudioUrls(updatedAudioUrls); // Update audio URLs for all peers
+        // });
 
         // Handle errors
         socket.on('error', (error) => {
@@ -68,6 +70,7 @@ const SocketComponent = () => {
             socket.off('peerJoined');
             socket.off('error');
             socket.off('songUrlUpdated'); // Cleanup listener for song URL updates
+            // socket.off('peersAudioUrls');
         };
     }, []);
 
