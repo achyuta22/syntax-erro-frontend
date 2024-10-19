@@ -49,12 +49,14 @@ function Player() {
           }
         );
         const data = await response.json();
-        console.log(data.secure_url);
+        console.log(`here the new Upload url is present ${data.secure_url}`);
         // setAudioUrls((prevUrls) => [...prevUrls, data.secure_url]);
         // socket.emit('updateUploadUrl',{audioUrls: audioUrls});// sending the state with all the song urls
+        // Emit the updated song URL to the server
+        socket.emit('updateSongUrl', data.secure_url);
         setAudioUrl(data.secure_url); // Set the uploaded file URL in global state
         const email = localStorage.getItem("userEmail"); // Retrieve email from localStorage
-
+        
         if (email) {
           // Make a request to your backend to store the URL in the database
           await axios.post("http://localhost:5000/api/store-audio-url", {
@@ -62,6 +64,7 @@ function Player() {
             audioUrl: data.secure_url,
           });
           console.log("Audio URL stored in the database successfully");
+          
         } else {
           console.error("No email found in localStorage");
         }

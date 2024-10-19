@@ -43,7 +43,7 @@ const SocketComponent = () => {
         });
         socket.on('songUrlUpdated', (url) => {
             console.log('Song URL is succesfully emitted from server:', url); // Debugging
-             setAudioUrl(url);
+            setAudioUrl(url);
             setCurrentSongUrl(url); // Update the song URL state
         });
         socket.on('playStatusUpdated', (playStatus) => {
