@@ -3,7 +3,7 @@ import socket from '../Utils/Socket'; // Import the socket instance
 import { useAudio } from "../AudioContext"; // Import the audio context
 
 const SocketComponent = () => {
-    const { audioUrl, setAudioUrl } = useAudio("https://res.cloudinary.com/dnlklmo7y/video/upload/v1729328576/sfqccbo8qkhed9mt0y9i.mp3"); // Access audioUrl and setAudioUrl from context
+    const { audioUrl, setAudioUrl } = useAudio(); // Access audioUrl and setAudioUrl from context
     const [room, setRoom] = useState(''); // State to track the room input
     const [joinedRoom, setJoinedRoom] = useState(''); // State to track the room the user joined
     const [sharedVariable, setSharedVariable] = useState(''); // Shared variable state
