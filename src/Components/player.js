@@ -7,9 +7,9 @@ import axios from "axios";
 import { useAudio } from "../AudioContext"; // Import the audio context
 
 function Player() {
-  const { audioUrl, setAudioUrl } = useAudio(); // Access audioUrl and setAudioUrl from context
+  const { audioUrl, setAudioUrl,playing,setPlaying } = useAudio(); // Access audioUrl and setAudioUrl from context
   const [volume, setVolume] = useState(0.8);
-  const [playing, setPlaying] = useState(false);
+//   const [playing, setPlaying] = useState(false);
   const [file, setFile] = useState(null);
 
   const togglePlay = () => {

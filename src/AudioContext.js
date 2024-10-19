@@ -5,9 +5,11 @@ const AudioContext = createContext();
 
 export const AudioProvider = ({ children }) => {
   const [audioUrl, setAudioUrl] = useState("");
+  const [playing, setPlaying] = useState(false);
+
 
   return (
-    <AudioContext.Provider value={{ audioUrl, setAudioUrl }}>
+    <AudioContext.Provider value={{ audioUrl, setAudioUrl,playing,setPlaying }}>
       {children}
     </AudioContext.Provider>
   );
