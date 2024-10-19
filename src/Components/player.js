@@ -1,14 +1,16 @@
-// App.js
+// src/Player.js
 
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
 import SocketComponent from "./SocketComponent"; // Import SocketComponent
 import axios from "axios";
+import { useAudio } from "../AudioContext"; // Import the audio context
+
 function Player() {
+  const { audioUrl, setAudioUrl } = useAudio(); // Access audioUrl and setAudioUrl from context
   const [volume, setVolume] = useState(0.8);
   const [playing, setPlaying] = useState(false);
   const [file, setFile] = useState(null);
-  const [audioUrl, setAudioUrl] = useState("");
 
   const togglePlay = () => {
     setPlaying(!playing);
@@ -34,7 +36,7 @@ function Player() {
         );
         const data = await response.json();
         console.log(data.secure_url);
-        setAudioUrl(data.secure_url); // Set the uploaded file URL
+        setAudioUrl(data.secure_url); // Set the uploaded file URL in global state
         const email = localStorage.getItem("userEmail"); // Retrieve email from localStorage
 
         if (email) {
@@ -62,7 +64,7 @@ function Player() {
       <div className="w-full md:w-2/3 lg:w-1/2 p-4 bg-white shadow-lg rounded-lg">
         {audioUrl ? (
           <ReactPlayer
-            url="https://res.cloudinary.com/dnlklmo7y/video/upload/v1729310904/vbruznlk1glkum97q23n.mp3"
+            url={audioUrl} // Use the global audioUrl
             playing={playing}
             controls={true}
             volume={volume}
