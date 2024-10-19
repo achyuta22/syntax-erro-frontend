@@ -1,70 +1,67 @@
-# Getting Started with Create React App
+# Music Sync Tool (Proof of Concept)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
+The **Music Sync Tool** is a real-time music playback synchronization app that enables seamless listening sessions across multiple devices. Whether you're syncing with friends or setting up a group playback session, the tool ensures minimal latency and handles any de-synchronization issues. The host manages playback controls, and all connected peers stay in sync in real-time.
 
-## Available Scripts
+## Features
+- **Real-time Playback Synchronization:** The host manages the playback (play, pause, jump), and the playback state is broadcasted to all connected peers, ensuring everyone hears the music at the same time.
+- **Peer Onboarding:** Peers can easily join rooms created by the host, syncing with the current playback state when they connect.
+- **Desynchronization Handling:** The tool checks for peer latency and compensates for any de-syncs by adjusting playback times or resyncing peers with the host.
+- **Latency Checking:** Continuous monitoring of connection quality between peers to ensure minimal delays.
 
-In the project directory, you can run:
+## How to Run
 
-### `npm start`
+### 1. Install Dependencies
+To install the necessary dependencies, run the following command:
+```bash
+npm install
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 2. Start the Server
+To start the development server, run:
+```bash
+npm start
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+This will start the app in development mode. You can open [http://localhost:3000](http://localhost:3000) in your browser to interact with the app.
 
-### `npm test`
+- The page will reload whenever you make changes.
+- Any lint errors or warnings will also be shown in the console.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Project Structure
+Here’s a breakdown of the project files and their purpose:
 
-### `npm run build`
+```
+.
+├── controllers
+│   └── hiController.js   # Handles WebSocket communication and peer onboarding logic
+├── routes
+│   └── hiRoute.js        # Defines the routes related to peer synchronization
+├── index.js              # Main entry point that sets up the Express server and WebSocket connections
+├── package.json          # Project configuration and dependency management
+├── package-lock.json     # Detailed dependency tree
+└── README.md             # This README file
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Key Files:
+1. **`controllers/hiController.js`**:
+   - Manages WebSocket connections and event handling.
+   - Responsible for onboarding new peers, syncing playback states, and handling any desynchronization issues.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. **`routes/hiRoute.js`**:
+   - Defines the routes for managing the synchronization logic, such as onboarding peers and broadcasting playback states.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **`index.js`**:
+   - Sets up the main server using Express.
+   - Initializes the WebSocket server with Socket.IO and configures event handling for peer connection and synchronization.
 
-### `npm run eject`
+## Key Concepts
+- **WebSocket Communication**: The app uses WebSockets (via Socket.IO) for real-time, bidirectional communication between the server and the connected peers.
+- **Delta Synchronization**: The app ensures efficient data transmission by only sending delta updates (changes) in playback state, rather than broadcasting the full state every time.
+- **Peer Management**: Peers are onboarded into rooms, and the host’s playback state is shared with them upon connection. This ensures they are synchronized with the music from the start.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Contributing
+Feel free to contribute by opening a pull request or submitting issues if you encounter bugs or have ideas for new features.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## License
+This project is licensed under the MIT License.
