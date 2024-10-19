@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
-import SocketComponent from './Components/SocketComponent';// Import SocketComponent
-
+import SocketComponent from "./SocketComponent"; // Import SocketComponent
+import axios from "axios";
 function Player() {
   const [volume, setVolume] = useState(0.8);
   const [playing, setPlaying] = useState(false);
@@ -35,6 +35,18 @@ function Player() {
         const data = await response.json();
         console.log(data.secure_url);
         setAudioUrl(data.secure_url); // Set the uploaded file URL
+        const email = localStorage.getItem("userEmail"); // Retrieve email from localStorage
+
+        if (email) {
+          // Make a request to your backend to store the URL in the database
+          await axios.post("http://localhost:5000/api/store-audio-url", {
+            email,
+            audioUrl: data.secure_url,
+          });
+          console.log("Audio URL stored in the database successfully");
+        } else {
+          console.error("No email found in localStorage");
+        }
       } catch (error) {
         console.error("Error uploading file:", error);
       }
@@ -43,8 +55,10 @@ function Player() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6 text-blue-600">React Player Audio</h1>
-      
+      <h1 className="text-3xl font-bold mb-6 text-blue-600">
+        React Player Audio
+      </h1>
+
       <div className="w-full md:w-2/3 lg:w-1/2 p-4 bg-white shadow-lg rounded-lg">
         {audioUrl ? (
           <ReactPlayer

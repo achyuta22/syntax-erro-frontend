@@ -4,7 +4,8 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Player from "./Components/player";
 import SocketComponent from "./Components/SocketComponent";
-import Login from "./Components/loginsignup";
+import Login from "./Components/login";
+import Signup from "./Components/signup";
 
 function App() {
   return (
@@ -20,6 +21,8 @@ function App() {
           
           {/* Route for the Login component */}
           <Route path="/login" element={<Login />} />
+
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </div>
     </Router>
