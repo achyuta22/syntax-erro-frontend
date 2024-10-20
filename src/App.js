@@ -6,6 +6,7 @@ import Player from "./Components/player";
 import SocketComponent from "./Components/SocketComponent";
 import Login from "./Components/login";
 import Signup from "./Components/signup";
+import LandingPage from "./Components/landingPage";
 
 function App() {
   return (
@@ -13,8 +14,9 @@ function App() {
       <div className="App">
         {/* Define routes for your components */}
         <Routes>
+        <Route path="/" element={<LandingPage />} />
           {/* Route for the Player component */}
-          <Route path="/" element={<Player />} />
+          <Route path="/play" element={<Player />} />
           
           {/* Route for the SocketComponent */}
           <Route path="/socket" element={<SocketComponent />} />
