@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import socket from '../Utils/Socket'; // Import the socket instance
 import { useAudio} from "../AudioContext"; // Import the audio context
 
 const SocketComponent = () => {
-    const { audioUrl, setAudioUrl,playing,setPlaying,audioUrls,setAudioUrls } = useAudio(); // Access audioUrl and setAudioUrl from context
+
+    const { audioUrl, setAudioUrl,playing,setPlaying,audioUrls,setAudioUrls,audiotime,setAudioTime} = useAudio(); // Access audioUrl and setAudioUrl from context
     const [uploadUrl,setUploadUrl] = useState('');// this store the audio link of the peer uploaded song 
     const [room, setRoom] = useState(''); // State to track the room input
     const [joinedRoom, setJoinedRoom] = useState(''); // State to track the room the user joined
@@ -13,6 +14,8 @@ const SocketComponent = () => {
     const [currentSongUrl, setCurrentSongUrl] = useState(''); // song url for peers from backend
     // const [song,setSong] = useState('abcd');
     // const [currentTimestamp, setCurrentTimestamp] = useState(0);
+
+
     useEffect(() => {
         // Listen for the connection event
         socket.on('connect', () => {
@@ -31,9 +34,9 @@ const SocketComponent = () => {
             setJoinedRoom(room); // Track the joined room
         });
 
-        // Handle peer joining notification
-        socket.on('peerJoined', (peerId) => {
-            setMessage(`Peer ${peerId} joined the room!`);
+        // Handle peer and peer components 
+        socket.on('peer', (peer) => {
+            console.log(`Peers data ${peer.peerId}, ${peer.currentTime}`);
         });
 
         // Listen for variable updates from the backend
@@ -55,11 +58,35 @@ const SocketComponent = () => {
         // console.log(`updated audiourls ${updatedAudioUrls}`);
         // setAudioUrls(updatedAudioUrls); // Update audio URLs for all peers
         // });
+        // Listen for timestamp updates from the host
+        // Inside your useEffect for socket events
+        
+        // socket.on('timestampUpdated', (timestamp) => {
+        //     console.log(`Timestamp is being received from backend ${timestamp}`);
+        //     setAudioTime(timestamp);
+        //     console.log('Player reference:', audiotime);
+
+        //     if (playerRef.current) { // Check if playerRef is not null
+        //         const currentTime = playerRef.current.currentTime; // Get the current playback time
+        //         const timeDifference = Math.abs(currentTime - timestamp); // Calculate the difference
+
+        //         if (timeDifference > 2) { // If the difference is greater than 2 seconds, adjust
+        //             // Adjust playback to match the host
+        //             console.log(`Syncing to host's timestamp: ${timestamp}`);
+        //             // Here you would add logic to adjust the playback time, e.g., seeking to the timestamp
+        //             playerRef.current.currentTime = timestamp; // This line assumes playerRef is an audio element
+        //         }
+        //     } else {
+        //         console.error("Player reference is null");
+        //     }
+        // });
+
 
         // Handle errors
         socket.on('error', (error) => {
             setMessage(error);
         });
+
 
         // Cleanup the effect when the component unmounts
         return () => {
@@ -67,9 +94,10 @@ const SocketComponent = () => {
             socket.off('variableUpdated');
             socket.off('roomCreated');
             socket.off('roomJoined');
-            socket.off('peerJoined');
+            socket.off('peer');
             socket.off('error');
             socket.off('songUrlUpdated'); // Cleanup listener for song URL updates
+            // socket.off('timestampUpdated');
             // socket.off('peersAudioUrls');
         };
     }, []);

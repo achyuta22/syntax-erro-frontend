@@ -8,7 +8,12 @@ The **Music Sync Tool** is a real-time music playback synchronization app that e
 - **Peer Onboarding:** Peers can easily join rooms created by the host, syncing with the current playback state when they connect.
 - **Desynchronization Handling:** The tool checks for peer latency and compensates for any de-syncs by adjusting playback times or resyncing peers with the host.
 - **Latency Checking:** Continuous monitoring of connection quality between peers to ensure minimal delays.
+1. **Emit the Current Timestamp from the Host:**
+   Whenever the host plays or updates the song, emit the current playback timestamp to all peers. The host can send the timestamp regularly, such as every second, to ensure synchronization.
 
+2. **Peers Adjust Playback:**
+   Peers will listen for this timestamp and, if the difference between the host's timestamp and their own is significant (more than a threshold, say 1-2 seconds), they can adjust their playback time to match the host.
+   
 ## How to Run
 
 ### 1. Install Dependencies
@@ -22,7 +27,13 @@ To start the development server, run:
 ```bash
 npm start
 ```
-
+ controllers: Contains socket and user controllers for handling socket connections and user-related logic.
+- db: Manages database connections.
+- index.js: Entry point for the application.
+- models: Defines data models, such as user schema.
+- package.json: Lists dependencies and project metadata.
+- routes: Defines API routes for handling requests.
+- server.js: Sets up and starts the server.
 This will start the app in development mode. You can open [http://localhost:3000](http://localhost:3000) in your browser to interact with the app.
 
 - The page will reload whenever you make changes.
@@ -31,33 +42,26 @@ This will start the app in development mode. You can open [http://localhost:3000
 ## Project Structure
 Here’s a breakdown of the project files and their purpose:
 
-```
 .
 ├── controllers
-│   └── hiController.js   # Handles WebSocket communication and peer onboarding logic
+│   ├── socketController.js
+│   └── userController.js
+├── db
+│   └── connection.js
+├── index.js
+├── models
+│   └── user.js
+├── package.json
+├── package-lock.json
 ├── routes
-│   └── hiRoute.js        # Defines the routes related to peer synchronization
-├── index.js              # Main entry point that sets up the Express server and WebSocket connections
-├── package.json          # Project configuration and dependency management
-├── package-lock.json     # Detailed dependency tree
-└── README.md             # This README file
+│   └── apiRoutes.js
+└── server.js
 ```
 
 ### Key Files:
-1. **`controllers/hiController.js`**:
-   - Manages WebSocket connections and event handling.
-   - Responsible for onboarding new peers, syncing playback states, and handling any desynchronization issues.
-
-2. **`routes/hiRoute.js`**:
-   - Defines the routes for managing the synchronization logic, such as onboarding peers and broadcasting playback states.
-
-3. **`index.js`**:
-   - Sets up the main server using Express.
-   - Initializes the WebSocket server with Socket.IO and configures event handling for peer connection and synchronization.
 
 ## Key Concepts
 - **WebSocket Communication**: The app uses WebSockets (via Socket.IO) for real-time, bidirectional communication between the server and the connected peers.
-- **Delta Synchronization**: The app ensures efficient data transmission by only sending delta updates (changes) in playback state, rather than broadcasting the full state every time.
 - **Peer Management**: Peers are onboarded into rooms, and the host’s playback state is shared with them upon connection. This ensures they are synchronized with the music from the start.
 
 ## Contributing
