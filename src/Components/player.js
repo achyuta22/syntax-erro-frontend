@@ -1,6 +1,6 @@
 // src/Player.js
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
 import SocketComponent from "./SocketComponent"; // Import SocketComponent
 import axios from "axios";
@@ -14,6 +14,15 @@ function Player() {
   const [currentIndex, setCurrentIndex] = useState(0); // Track current audio index
 //   const [playing, setPlaying] = useState(false);
   const [file, setFile] = useState(null);
+  const [Host, setHost] = useState();
+
+  socket.on('Host',(hostId)=>{
+    setHost(hostId);
+  })
+
+  // Define playerRef using useRef
+  // UseRef In React, ref is used to directly interact with DOM elements or third-party libraries
+  const playerRef = useRef(null);
 
   const togglePlay = () => {
     const newPlayStatus = !playing;
@@ -73,6 +82,56 @@ function Player() {
       }
     }
   };
+// sending host timestamp to server that intern will be broadcasted to the peers
+//(which will intern be used in functions used for synchronisation)
+
+  // this will run socket.id == hostId
+  // Function to sync the host's timestamp with peers
+  const syncWithHost = () => {
+    if (playing && Host === socket.id) {
+      const currentTime = playerRef.current.getCurrentTime(); // Get current playback time
+      console.log(`Host Timestamp is being sent ${currentTime}`)
+      socket.emit('syncTimestamp', currentTime); // Emit the timestamp to peers
+    }
+  };
+
+  useEffect(() => {
+    if (playing && Host === socket.id) {
+      const interval = setInterval(syncWithHost, 1000); // Sync every second
+      return () => clearInterval(interval);
+    }
+  }, [playing]);
+
+  // setting broadcast of the currenttime of peers to server(now currentime can be used in synchronization functions)
+  // setting broadcast of the currenttime of peers to server
+const syncpeer = () => {
+  if (playing && socket.id !== Host) {  // Ensure only peers (not the host) emit their timestamp
+    const currentTime = playerRef.current.getCurrentTime(); // Get current playback time
+    console.log('Peer timestamp for sync (peer):', currentTime);
+    socket.emit('updatePeerComponent', {currentTime: currentTime, peerId: socket.id}); // Emit the timestamp to the server
+  }
+};
+
+// Run syncpeer periodically only if playing and it's a peer
+useEffect(() => {
+  if (playing && socket.id !== Host) {  // Ensure only peers run the syncpeer function
+    const interval = setInterval(syncpeer, 1000); // Sync every second
+    return () => clearInterval(interval); // Clear interval when not playing
+  }
+}, [playing]);  // Include Host in the dependency array to react to changes
+// Adjust peer's playback if they deviate from the host's timestamp by more than 5 seconds
+
+// socket.on('syncTimestamp', (hostTimestamp) => {
+//   if (socket.id !== Host) {
+//     const currentTime = playerRef.current.getCurrentTime();
+//     const timeDifference = Math.abs(currentTime - hostTimestamp);
+
+//     if (timeDifference > 5) {
+//       playerRef.current.seekTo(hostTimestamp); // Adjust playback to match the host's timestamp
+//       console.log(`Synced to host's timestamp: ${hostTimestamp}`);
+//     }
+//   }
+// });
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
@@ -84,6 +143,7 @@ function Player() {
         {audioUrl ? (
           <ReactPlayer
             url={audioUrl} // Use the global audioUrl
+            ref={playerRef} // Attach the ref to ReactPlayer
             playing={playing}
             controls={true}
             volume={volume}
