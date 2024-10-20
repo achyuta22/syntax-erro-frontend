@@ -1,5 +1,8 @@
 # Music Sync Tool (Proof of Concept)
 
+## Deployed URL on VERCEL
+https://syntax-erro-frontend-git-main-eazeplace.vercel.app/
+
 ## Overview
 The **Music Sync Tool** is a real-time music playback synchronization app that enables seamless listening sessions across multiple devices. Whether you're syncing with friends or setting up a group playback session, the tool ensures minimal latency and handles any de-synchronization issues. The host manages playback controls, and all connected peers stay in sync in real-time.
 
