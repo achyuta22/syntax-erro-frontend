@@ -81,43 +81,6 @@ This will start the app in development mode. You can open [http://localhost:3000
 - The page will reload whenever you make changes.
 - Any lint errors or warnings will also be shown in the console.
 
-## Project Structure
-Here’s a breakdown of the project files and their purpose:
-
-
-.
-├── Dockerfile
-├── package.json
-├── package-lock.json
-├── postcss.config.js
-├── public
-│   ├── favicon.ico
-│   ├── Group.jpeg
-│   ├── index.html
-│   ├── logo192.png
-│   ├── logo512.png
-│   ├── manifest.json
-│   └── robots.txt
-├── README.md
-├── src
-│   ├── App.css
-│   ├── App.js
-│   ├── App.test.js
-│   ├── AudioContext.js
-│   ├── Components
-│   │   ├── landingPage.jsx
-│   │   ├── login.js
-│   │   ├── player.js
-│   │   ├── signup.js
-│   │   └── SocketComponent.js
-│   ├── index.css
-│   ├── index.js
-│   ├── logo.svg
-│   ├── reportWebVitals.js
-│   ├── setupTests.js
-│   └── Utils
-│       └── Socket.js
-└── tailwind.config.js
 
 ```
 
