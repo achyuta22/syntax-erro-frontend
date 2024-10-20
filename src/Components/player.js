@@ -1,6 +1,6 @@
 // src/Player.js
 
-import React, { useState } from "react";
+import React, { useState , useEffect, useRef} from "react";
 import ReactPlayer from "react-player";
 import SocketComponent from "./SocketComponent"; // Import SocketComponent
 import axios from "axios";
@@ -12,7 +12,12 @@ function Player() {
   const [volume, setVolume] = useState(0.8);
   const [currentIndex, setCurrentIndex] = useState(0); // Track current audio index
   const [file, setFile] = useState(null);
-
+  const[Host,setHost] = useState();
+  const playerRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+  socket.on('Host',(hostId)=>{
+    setHost(hostId);
+  })
   const togglePlay = () => {
     const newPlayStatus = !playing;
     console.log(newPlayStatus);
