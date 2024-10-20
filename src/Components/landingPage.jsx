@@ -17,6 +17,11 @@ const LandingPage = () => {
           />
         </div>
         <div className="relative z-10">
+          <img
+            src="./logooo.png" // Path to your logo image
+            alt="SyncTunes Logo"
+            className="mx-auto mb-6 h-20" // Adjust height as needed
+          />
           <h1 className="text-6xl font-bold mb-6 drop-shadow-lg">SyncTunes</h1>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             Listen to music with friends, in perfect sync, no matter where you
