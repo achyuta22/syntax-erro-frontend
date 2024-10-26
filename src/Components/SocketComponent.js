@@ -4,7 +4,7 @@ import { useAudio} from "../AudioContext"; // Import the audio context
 
 const SocketComponent = () => {
 
-    const { audioUrl, setAudioUrl,playing,setPlaying,joinedRoom,setJoinedRoom,audioTime,setAudioTime} = useAudio(); // Access audioUrl and setAudioUrl from context
+    const { audioUrl, setAudioUrl,playing,setPlaying,joinedRoom,setJoinedRoom,audioTime,setAudioTime,timeStamp,setTimeStamp,jumped,setJumped} = useAudio(); // Access audioUrl and setAudioUrl from context
     const [uploadUrl,setUploadUrl] = useState('');// this store the audio link of the peer uploaded song 
     const [room, setRoom] = useState(''); // State to track the room input
     // const [variableInput, setVariableInput] = useState(''); // State to track variable input
@@ -45,6 +45,12 @@ const SocketComponent = () => {
         socket.on('playStatusUpdated', (playStatus) => {
             console.log('Received play/pause update from host:', playStatus); // Debugging
             setPlaying(playStatus); // Update play status based on the host
+        });
+        socket.on('setChangedTimeStamp', (jumpedTimeStamp) => {
+            // Update the timestamp
+            console.log('Received timestamp update from host:', jumpedTimeStamp); // Debugging
+            setTimeStamp(jumpedTimeStamp);
+            setJumped(true);
         });
         // Listening for audio URL updates from the backend
         // socket.on('peersAudioUrls', (updatedAudioUrls) => {
