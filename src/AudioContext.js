@@ -5,14 +5,14 @@ const AudioContext = createContext();
 
 export const AudioProvider = ({ children }) => {
   const [audioUrl, setAudioUrl] = useState("");
-  const [audiotime,setAudioTime] = useState();
+  const [audioTime,setAudioTime] = useState();
   const [playing, setPlaying] = useState(false);
   const [audioUrls, setAudioUrls] = useState([]); // Use array for audio URLs
-
+  const [joinedRoom, setJoinedRoom] = useState(''); // State to track the room the user joined
 
   return (
     // wrapping children with some global state variables 
-    <AudioContext.Provider value={{ audioUrl, setAudioUrl,playing,setPlaying, audioUrls,setAudioUrls,audiotime,setAudioTime}}>
+    <AudioContext.Provider value={{ audioUrl, setAudioUrl,playing,setPlaying, audioUrls,setAudioUrls,audioTime,setAudioTime,joinedRoom,setJoinedRoom}}>
       {children}
     </AudioContext.Provider>
   );

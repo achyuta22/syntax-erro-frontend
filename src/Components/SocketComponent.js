@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import socket from '../Utils/Socket'; // Import the socket instance
 import { useAudio} from "../AudioContext"; // Import the audio context
 
 const SocketComponent = () => {
 
-    const { audioUrl, setAudioUrl,playing,setPlaying,audioUrls,setAudioUrls,audiotime,setAudioTime} = useAudio(); // Access audioUrl and setAudioUrl from context
+    const { audioUrl, setAudioUrl,playing,setPlaying,joinedRoom,setJoinedRoom,audioTime,setAudioTime} = useAudio(); // Access audioUrl and setAudioUrl from context
     const [uploadUrl,setUploadUrl] = useState('');// this store the audio link of the peer uploaded song 
     const [room, setRoom] = useState(''); // State to track the room input
-    const [joinedRoom, setJoinedRoom] = useState(''); // State to track the room the user joined
-    const [sharedVariable, setSharedVariable] = useState(''); // Shared variable state
-    const [variableInput, setVariableInput] = useState(''); // State to track variable input
+    // const [variableInput, setVariableInput] = useState(''); // State to track variable input
     const [message, setMessage] = useState(''); // State for messages (success/error)
     const [currentSongUrl, setCurrentSongUrl] = useState(''); // song url for peers from backend
     // const [song,setSong] = useState('abcd');
@@ -29,20 +27,15 @@ const SocketComponent = () => {
         });
 
         // Listen for room joining confirmation
-        socket.on('roomJoined', (room) => {
-            setMessage(`Joined room "${room}". Waiting for updates...`);
-            setJoinedRoom(room); // Track the joined room
+        socket.on('roomJoined', ({roomName,hostTimeStamp}) => {
+            setMessage(`Joined room "${roomName}". Waiting for updates...`);
+            setJoinedRoom(roomName); // Track the joined room
+            setAudioTime(hostTimeStamp);
         });
 
         // Handle peer and peer components 
         socket.on('peer', (peer) => {
             console.log(`Peers data ${peer.peerId}, ${peer.currentTime}`);
-        });
-
-        // Listen for variable updates from the backend
-        socket.on('variableUpdated', (newValue) => {
-            console.log('Variable updated from server:', newValue); // Debugging
-            setSharedVariable(newValue); // Update the shared variable state
         });
         socket.on('songUrlUpdated', (url) => {
             console.log('Song URL is succesfully emitted from server:', url); // Debugging
@@ -61,25 +54,6 @@ const SocketComponent = () => {
         // Listen for timestamp updates from the host
         // Inside your useEffect for socket events
         
-        // socket.on('timestampUpdated', (timestamp) => {
-        //     console.log(`Timestamp is being received from backend ${timestamp}`);
-        //     setAudioTime(timestamp);
-        //     console.log('Player reference:', audiotime);
-
-        //     if (playerRef.current) { // Check if playerRef is not null
-        //         const currentTime = playerRef.current.currentTime; // Get the current playback time
-        //         const timeDifference = Math.abs(currentTime - timestamp); // Calculate the difference
-
-        //         if (timeDifference > 2) { // If the difference is greater than 2 seconds, adjust
-        //             // Adjust playback to match the host
-        //             console.log(`Syncing to host's timestamp: ${timestamp}`);
-        //             // Here you would add logic to adjust the playback time, e.g., seeking to the timestamp
-        //             playerRef.current.currentTime = timestamp; // This line assumes playerRef is an audio element
-        //         }
-        //     } else {
-        //         console.error("Player reference is null");
-        //     }
-        // });
 
 
         // Handle errors
@@ -117,18 +91,6 @@ const SocketComponent = () => {
             setRoom(''); // Clear the input field
         }
     };
-
-    const handleChangeVariable = () => {
-        if (variableInput) {
-            console.log('Changing variable to:', variableInput); // Debugging
-            socket.emit('changeVariable', variableInput); // Emit changeVariable event
-            setVariableInput(''); // Clear the variable input after submission
-        }
-    };
-    const handlePlayPauseEmit = (playStatus) => {
-        socket.emit('playPauseUpdate', playStatus); // Emit the play/pause status to peers
-    };
-
     return (
         <div className="p-4 bg-gray-50 rounded-lg shadow-lg max-w-md mx-auto">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">Socket.IO Room Management</h2>
@@ -153,24 +115,10 @@ const SocketComponent = () => {
                     Join Room
                 </button>
             </div>
-            {joinedRoom && <p className="text-green-600 mb-4">You are in room: {joinedRoom}</p>}
+            {joinedRoom && <p className="text-green-600 mb-4">You have joined room: {joinedRoom}</p>}
             {message && <p className="text-red-600 mb-4">{message}</p>} {/* Display messages to the user */}
 
-            <input
-                type="text"
-                placeholder="Enter the variable"
-                value={variableInput}
-                onChange={(e) => setVariableInput(e.target.value)}
-                className="p-2 mb-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-                onClick={handleChangeVariable}
-                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded shadow hover:opacity-90 transition"
-            >
-                Change Variable
-            </button>
-
-            {sharedVariable && <p className="mt-4 text-gray-700">Variable has been updated: {sharedVariable}</p>}
+            
         </div>
     );
 };

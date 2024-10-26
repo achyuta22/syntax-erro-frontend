@@ -1,6 +1,6 @@
 // src/Player.js
 
-import React, { useState } from "react";
+import React, { useState , useEffect, useRef} from "react";
 import ReactPlayer from "react-player";
 import SocketComponent from "./SocketComponent"; // Import SocketComponent
 import axios from "axios";
@@ -8,11 +8,16 @@ import socket from "../Utils/Socket";
 import { useAudio } from "../AudioContext"; // Import the audio context
 
 function Player() {
-  const { audioUrl, setAudioUrl, playing, setPlaying } = useAudio(); // Access audioUrl and setAudioUrl from context
+  const { audioUrl, setAudioUrl, playing, setPlaying,joinedRoom,setJoinedRoom,audioTime,setAudioTime} = useAudio(); // Access audioUrl and setAudioUrl from context
   const [volume, setVolume] = useState(0.8);
-  const [currentIndex, setCurrentIndex] = useState(0); // Track current audio index
   const [file, setFile] = useState(null);
-
+  const[Host,setHost] = useState();
+  const playerRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isReady, setIsReady] = useState(false); // Track if player is ready
+  socket.on('Host',(hostId)=>{
+    setHost(hostId);
+  })
   const togglePlay = () => {
     const newPlayStatus = !playing;
     console.log(newPlayStatus);
@@ -79,6 +84,16 @@ function Player() {
 
   // this will run socket.id == hostId
   // Function to sync the host's timestamp with peers
+  // Sync with the host's timestamp when the player is ready
+  useEffect(() => {
+    if (joinedRoom && audioTime !== null && !isNaN(audioTime) && isReady && playerRef.current) {
+        console.log(`Trying to sync with host timestamp: ${audioTime}`);
+        playerRef.current.seekTo(audioTime);
+    } else {
+        console.error('Invalid audioTime:', audioTime); // Log the invalid audioTime
+    }
+}, [audioTime, joinedRoom, isReady]);
+
   const syncWithHost = () => {
     if (playing && Host === socket.id) {
       const currentTime = playerRef.current.getCurrentTime(); // Get current playback time
@@ -111,19 +126,10 @@ useEffect(() => {
     return () => clearInterval(interval); // Clear interval when not playing
   }
 }, [playing]);  // Include Host in the dependency array to react to changes
-// Adjust peer's playback if they deviate from the host's timestamp by more than 5 seconds
 
-// socket.on('syncTimestamp', (hostTimestamp) => {
-//   if (socket.id !== Host) {
-//     const currentTime = playerRef.current.getCurrentTime();
-//     const timeDifference = Math.abs(currentTime - hostTimestamp);
-
-//     if (timeDifference > 5) {
-//       playerRef.current.seekTo(hostTimestamp); // Adjust playback to match the host's timestamp
-//       console.log(`Synced to host's timestamp: ${hostTimestamp}`);
-//     }
-//   }
-// });
+const handlePlayerReady = () => {
+  setIsReady(true);
+};
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
@@ -140,6 +146,7 @@ useEffect(() => {
             width="100%"
             height="50px"
             className="rounded-md"
+            onReady={handlePlayerReady}
           />
         ) : (
           <p className="text-gray-600">No audio uploaded yet</p>
