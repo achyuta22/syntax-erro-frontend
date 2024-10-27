@@ -34,8 +34,11 @@ function Player() {
     const newPlayStatus = !playing;
     console.log(newPlayStatus);
     setPlaying(newPlayStatus); // Update local play status
-    socket.emit("playStatusChanged", newPlayStatus); // Emit play/pause status to peers
+    
   };
+  useEffect(()=>{
+    socket.emit("playStatusChanged", playing); // Emit play/pause status to peers
+  },[playing])
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -160,7 +163,14 @@ function Player() {
   }, [timeStamp]); // Runs every time `timestamp` changes
   
   const handleSeek = (seconds) => {
+    const  syncPlay = playing;
+    console.log(`syncPlay ${syncPlay} and Player is ${playing}`)
+    setPlaying(false);
     setTimeStamp(seconds); // Directly updates timestamp when user seeks to a new point
+    setTimeout(() => {
+      console.log(`syncPlay ${syncPlay} and Player is ${playing}`)
+      setPlaying(syncPlay); // Resume playing after delay
+    }, 4000); 
     console.log("User changed timestamp to:", seconds);
   };
   useEffect(()=>{
