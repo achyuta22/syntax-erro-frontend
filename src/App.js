@@ -7,7 +7,7 @@ import SocketComponent from "./Components/SocketComponent";
 import Login from "./Components/login";
 import Signup from "./Components/signup";
 import LandingPage from "./Components/landingPage";
-
+import Room from "./Components/room"
 function App() {
   return (
     <Router>
@@ -23,7 +23,7 @@ function App() {
           
           {/* Route for the Login component */}
           <Route path="/login" element={<Login />} />
-
+          <Route path="/room" element={<Room />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>
       </div>
